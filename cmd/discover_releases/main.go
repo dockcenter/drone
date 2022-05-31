@@ -18,7 +18,7 @@ func main() {
 	for _, release := range releases {
 		duration := time.Since(release.PublishedAt.Time)
 		hours := duration.Hours()
-		if hours < 24 && !*release.Prerelease {
+		if hours < 384 && !*release.Prerelease {
 			tagNames = append(tagNames, *release.TagName)
 		}
 	}

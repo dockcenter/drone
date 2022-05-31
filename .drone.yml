@@ -11,7 +11,7 @@ steps:
     commands:
       - go run ./cmd/discover_releases/main.go
   - name: Promote
-    image: alpine
+    image: golang:1.18.2-alpine
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -22,7 +22,7 @@ steps:
       - apk --no-cache add curl tar
       - curl -L https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
       - install -t /usr/local/bin drone
-      - sh scripts/promote.sh
+      - go run ./cmd/promote/main.go
 
 ---
 kind: pipeline
@@ -37,7 +37,7 @@ steps:
   - name: Clone
     image: alpine/git
     commands:
-      - git clone --depth 1 --branch $DRONE_TAG https://github.com/harness/drone.git drone
+      - git clone --depth 1 --branch $TAG https://github.com/harness/drone.git drone
   - name: Build
     image: golang:1.14.15
     environment:
@@ -51,7 +51,7 @@ steps:
       dockerfile: docker/Dockerfile.server.linux.amd64
       dry_run: true
       repo: dockcenter/drone
-      tags: ${DRONE_TAG}
+      tags: ${DOCKER_TAGS}
       username:
         from_secret: docker_username
       password:
