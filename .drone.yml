@@ -1,3 +1,4 @@
+---
 kind: pipeline
 type: kubernetes
 name: Discover GitHub releases
@@ -73,3 +74,8 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
+---
+kind: signature
+hmac: 0b6a9e5a0e17675641c66b44d7b398f70ee4e19c087aa7c4c0dd0060466ba102
+
+...
