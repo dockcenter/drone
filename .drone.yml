@@ -1,0 +1,75 @@
+kind: pipeline
+type: kubernetes
+name: Discover GitHub releases
+trigger:
+  event: 
+    exclude:
+      - promote
+steps:
+  - name: Discover releases
+    image: golang:1.18.2-alpine
+    environment:
+      DURATION: 24h
+    commands:
+      - go run ./cmd/discover_releases/main.go
+  - name: Promote
+    image: golang:1.18.2-alpine
+    environment:
+      DRONE_SERVER: http://drone
+      DRONE_TOKEN:
+        from_secret: drone_token
+      ENVIRONMENT: production
+    commands:
+      - apk --no-cache add curl tar
+      - curl -L https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
+      - install -t /usr/local/bin drone
+      - go run ./cmd/promote/main.go
+      - cat scripts/promote.sh
+      - sh scripts/promote.sh
+
+---
+kind: pipeline
+type: kubernetes
+name: Publish
+trigger:
+  event: 
+    - promote
+steps:
+  - name: Clone drone
+    image: alpine/git
+    commands:
+      - git clone --depth 1 --branch $TAG https://github.com/harness/drone.git drone
+  - name: Build
+    image: golang:1.14.15
+    environment:
+      GOARCH: amd64
+      GOOS: linux
+    commands:
+      - sh scripts/build.sh
+  - name: Build Docker image
+    image: plugins/docker
+    when:
+      target: 
+        - staging
+    settings:
+      dockerfile: docker/Dockerfile.server.linux.amd64
+      dry_run: true
+      repo: dockcenter/drone
+      tags: ${DOCKER_TAGS}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+  - name: Publish Docker image
+    image: plugins/docker
+    when:
+      target: 
+        - production
+    settings:
+      dockerfile: docker/Dockerfile.server.linux.amd64
+      repo: dockcenter/drone
+      tags: ${DOCKER_TAGS}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
