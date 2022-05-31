@@ -17,12 +17,16 @@ steps:
     commands:
       - git clone --depth 1 --branch v2.12.0 https://github.com/harness/drone.git drone
   - name: Build
-    image: golang:1.18.2
+    image: golang:1.14.15
     environment:
       GOARCH: amd64
       GOOS: linux
     commands:
       - sh scripts/build.sh
+  - name: List binaries
+    image: alpine
+    commands:
+      - ls drone/release
   - name: Publish Docker image
     image: plugins/docker
     settings:
