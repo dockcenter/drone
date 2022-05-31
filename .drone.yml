@@ -2,5 +2,7 @@ kind: pipeline
 type: kubernetes
 name: Build Docker image
 steps:
-  - name: Hello world
-    image: hello-world
+  - name: Discover releases
+    image: golang:1.18.2-alpine
+    commands:
+      - go run ./cmd/discover_releases/main.go
