@@ -46,11 +46,11 @@ func main() {
 	}
 
 	// write commands to promote.sh
-	if len(commands) > 0 {
-		if err := os.WriteFile("scripts/promote.sh", []byte(strings.Join(commands, "\n")), 0644); err != nil {
-			panic(err)
-		}
-	} else {
+	if err := os.WriteFile("scripts/promote.sh", []byte(strings.Join(commands, "\n")), 0644); err != nil {
+		panic(err)
+	}
+
+	if len(commands) == 0 {
 		fmt.Println("No tags to promote")
 	}
 }
