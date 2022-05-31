@@ -38,7 +38,8 @@ func main() {
 
 		// Run drone promote command
 		cmd := exec.Command("drone", "build", "promote", "$DRONE_REPO", "$DRONE_BUILD_NUMBER", "$ENVIRONMENT", "--param=TAG="+param.TAG, "--param=DOCKER_TAGS="+param.DOCKER_TAGS)
-		if _, err := cmd.Output(); err != nil {
+		if out, err := cmd.Output(); err != nil {
+			log.Println(out)
 			log.Fatal(err)
 		}
 	}
