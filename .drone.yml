@@ -37,7 +37,7 @@ steps:
   - name: Clone
     image: alpine/git
     commands:
-      - git clone --depth 1 --branch $TAG https://github.com/harness/drone.git drone
+      - git clone --depth 1 --branch $DRONE_TAG https://github.com/harness/drone.git drone
   - name: Build
     image: golang:1.14.15
     environment:
@@ -51,7 +51,7 @@ steps:
       dockerfile: docker/Dockerfile.server.linux.amd64
       dry_run: true
       repo: dockcenter/drone
-      tags: ${TAG}
+      tags: ${DRONE_TAG}
       username:
         from_secret: docker_username
       password:
