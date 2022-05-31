@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -22,6 +23,10 @@ func main() {
 
 	var commands []string
 	for _, tag := range strings.Split(str, "\n") {
+		if strings.TrimSpace(tag) == "" {
+			continue
+		}
+
 		var param PromotionParams
 		param.TAG = tag
 
@@ -41,8 +46,12 @@ func main() {
 	}
 
 	// write commands to promote.sh
-	if err := os.WriteFile("scripts/promote.sh", []byte(strings.Join(commands, "\n")), 0644); err != nil {
-		panic(err)
+	if len(commands) > 0 {
+		if err := os.WriteFile("scripts/promote.sh", []byte(strings.Join(commands, "\n")), 0644); err != nil {
+			panic(err)
+		}
+	} else {
+		fmt.Println("No tags to promote")
 	}
 }
 
