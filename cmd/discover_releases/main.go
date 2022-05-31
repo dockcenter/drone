@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -11,10 +12,14 @@ import (
 
 func main() {
 	event := os.Getenv("DRONE_BUILD_EVENT")
+	branch := os.Getenv("DRONE_BRANCH")
 	duration, err := time.ParseDuration(os.Getenv("DURATION"))
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Trigger event:", event)
+	fmt.Println("Branch:", branch)
+	fmt.Println("Duration:", duration)
 
 	client := github.NewClient(nil)
 	releases, _, _ := client.Repositories.ListReleases(context.Background(), "drone", "drone", nil)
@@ -28,8 +33,8 @@ func main() {
 		}
 	}
 
-	// retain last tag if event isn't cron and tagNames is empty
-	if len(tagNames) == 0 && event != "cron" {
+	// retain last tag if push to main
+	if len(tagNames) == 0 && event == "push" && branch == "main" {
 		tagNames = append(tagNames, *releases[0].TagName)
 	}
 

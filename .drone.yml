@@ -35,7 +35,7 @@ trigger:
   event: 
     - promote
 steps:
-  - name: Clone
+  - name: Clone drone
     image: alpine/git
     commands:
       - git clone --depth 1 --branch $TAG https://github.com/harness/drone.git drone
