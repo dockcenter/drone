@@ -6,16 +6,31 @@ steps:
     image: golang:1.18.2-alpine
     commands:
       - go run ./cmd/discover_releases/main.go
+  - name: Promote
+    image: drone/cli
+    environment:
+      DRONE_SERVER: http://drone
+      DRONE_TOKEN:
+        from_secret: drone_token
+      ENVIRONMENT: staging
+      FILE: tags.txt
+    commands:
+      - sh scripts/promote.sh
 
 ---
 kind: pipeline
 type: kubernetes
-name: Build
+name: Publish
+trigger:
+  event: 
+    - promote
+  target:
+    - staging
 steps:
   - name: Clone
     image: alpine/git
     commands:
-      - git clone --depth 1 --branch v2.12.0 https://github.com/harness/drone.git drone
+      - git clone --depth 1 --branch $TAG https://github.com/harness/drone.git drone
   - name: Build
     image: golang:1.14.15
     environment:
@@ -29,9 +44,8 @@ steps:
       dockerfile: docker/Dockerfile.server.linux.amd64
       dry_run: true
       repo: dockcenter/drone
+      tags: $TAG
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
-depends_on:
-  - "Discover GitHub releases"

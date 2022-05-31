@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Write tag name to tags.txt
-	if err := os.WriteFile("tags.txt", []byte(strings.Join(tagNames, ",")), 0644); err != nil {
+	if err := os.WriteFile("tags.txt", []byte(strings.Join(tagNames, "\n")), 0644); err != nil {
 		panic(err)
 	}
 }
