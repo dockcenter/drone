@@ -8,6 +8,8 @@ trigger:
 steps:
   - name: Discover releases
     image: golang:1.18.2-alpine
+    environment:
+      DURATION: 24h
     commands:
       - go run ./cmd/discover_releases/main.go
   - name: Promote
