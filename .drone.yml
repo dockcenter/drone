@@ -1,13 +1,37 @@
 kind: pipeline
 type: kubernetes
-name: Build Docker image
+name: Discover GitHub releases
 steps:
   - name: Discover releases
     image: golang:1.18.2-alpine
     commands:
       - go run ./cmd/discover_releases/main.go
-  - name: Print tags.txt
-    image: busybox
+
+---
+kind: pipeline
+type: kubernetes
+name: Build
+steps:
+  - name: Clone
+    image: alpine/git
     commands:
-      - ls
-      - cat tags.txt
+      - git clone --depth 1 --branch v2.12.0 https://github.com/harness/drone.git drone
+  - name: Build
+    image: golang:1.18.2-alpine
+    environment:
+      GOARCH: amd64
+      GOOS: linux
+    commands:
+      - sh scripts/build.sh
+  - name: Publish Docker image
+    image: plugins/docker
+    settings:
+      dockerfile: docker/Dockerfile.server.linux.amd64
+      dry_run: true
+      repo: dockcenter/drone
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+depends_on:
+  - "Discover GitHub releases"
