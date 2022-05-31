@@ -23,10 +23,6 @@ steps:
       GOOS: linux
     commands:
       - sh scripts/build.sh
-  - name: List binaries
-    image: alpine
-    commands:
-      - ls drone/release
   - name: Publish Docker image
     image: plugins/docker
     settings:
