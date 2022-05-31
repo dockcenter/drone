@@ -6,3 +6,8 @@ steps:
     image: golang:1.18.2-alpine
     commands:
       - go run ./cmd/discover_releases/main.go
+  - name: Print tags.txt
+    image: busybox
+    commands:
+      - ls
+      - cat tags.txt
