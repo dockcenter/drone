@@ -1,9 +1,7 @@
 package main
 
 import (
-	"log"
 	"os"
-	"os/exec"
 	"strings"
 
 	"golang.org/x/mod/semver"
@@ -22,6 +20,7 @@ func main() {
 	}
 	str := string(bytes)
 
+	var commands []string
 	for _, tag := range strings.Split(str, "\n") {
 		var param PromotionParams
 		param.TAG = tag
@@ -36,12 +35,14 @@ func main() {
 		}
 		param.DOCKER_TAGS = strings.Join(tags, ",")
 
-		// Run drone promote command
-		cmd := exec.Command("drone", "build", "promote", "$DRONE_REPO", "$DRONE_BUILD_NUMBER", "$ENVIRONMENT", "--param=TAG="+param.TAG, "--param=DOCKER_TAGS="+param.DOCKER_TAGS)
-		if out, err := cmd.Output(); err != nil {
-			log.Println(out)
-			log.Fatal(err)
-		}
+		// Build drone promote command
+		cmd := "drone build promote $DRONE_REPO $DRONE_BUILD_NUMBER $ENVIRONMENT --param=TAG=" + param.TAG + " --param=DOCKER_TAGS=" + param.DOCKER_TAGS
+		commands = append(commands, cmd)
+	}
+
+	// write commands to promote.sh
+	if err := os.WriteFile("scripts/promote.sh", []byte(strings.Join(commands, "\n")), 0644); err != nil {
+		panic(err)
 	}
 }
 
