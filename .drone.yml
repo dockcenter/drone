@@ -7,7 +7,7 @@ steps:
     commands:
       - go run ./cmd/discover_releases/main.go
   - name: Promote
-    image: ubuntu
+    image: busybox
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
@@ -15,7 +15,7 @@ steps:
       ENVIRONMENT: staging
       FILE: tags.txt
     commands:
-      - curl -L https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
+      - wget https://github.com/harness/drone-cli/releases/latest/download/drone_linux_amd64.tar.gz | tar zx
       - install -t /usr/local/bin drone
       - sh scripts/promote.sh
 
