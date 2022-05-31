@@ -7,7 +7,7 @@ steps:
     commands:
       - go run ./cmd/discover_releases/main.go
   - name: Promote
-    image: alpine
+    image: busybox
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
