@@ -8,6 +8,7 @@ steps:
       - go run ./cmd/discover_releases/main.go
   - name: Promote
     image: drone/cli
+    entrypoint: /bin/bash
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
