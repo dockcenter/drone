@@ -3,7 +3,8 @@ type: kubernetes
 name: Discover GitHub releases
 trigger:
   event: 
-  - cron
+    exclude:
+      - promote
 steps:
   - name: Discover releases
     image: golang:1.18.2-alpine
