@@ -9,7 +9,7 @@ steps:
   - name: Promote
     image: drone/cli
     entrypoint:
-      - /bin/bash
+      - /bin/sh
     environment:
       DRONE_SERVER: http://drone
       DRONE_TOKEN:
