@@ -34,8 +34,6 @@ name: Publish
 trigger:
   event: 
     - promote
-  target:
-    - staging
 steps:
   - name: Clone
     image: alpine/git
@@ -48,11 +46,27 @@ steps:
       GOOS: linux
     commands:
       - sh scripts/build.sh
-  - name: Publish Docker image
+  - name: Build Docker image
     image: plugins/docker
+    when:
+      target: 
+        - staging
     settings:
       dockerfile: docker/Dockerfile.server.linux.amd64
       dry_run: true
+      repo: dockcenter/drone
+      tags: ${DOCKER_TAGS}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+  - name: Publish Docker image
+    image: plugins/docker
+    when:
+      target: 
+        - production
+    settings:
+      dockerfile: docker/Dockerfile.server.linux.amd64
       repo: dockcenter/drone
       tags: ${DOCKER_TAGS}
       username:
